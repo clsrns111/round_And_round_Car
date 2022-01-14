@@ -4,6 +4,12 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import Car from "./Car.js";
 import Ground from "./Ground";
 
+//canvas
+const c = document.getElementById("c");
+document.addEventListener("DOMContentLoaded", () => {
+  c.style.opacity = 1;
+});
+
 //secene
 const scene = new THREE.Scene();
 const canvas = document.querySelector("canvas");
@@ -29,9 +35,9 @@ const camera = new THREE.PerspectiveCamera(
   1,
   100
 );
-camera.position.y = 16;
-camera.position.z = 15;
-camera.position.x = 9;
+camera.position.y = 12;
+camera.position.z = 17;
+camera.position.x = 18;
 
 scene.add(camera);
 
@@ -67,12 +73,13 @@ controls.enableDamping = true;
 //renderer
 const renderer = new THREE.WebGLRenderer({
   canvas,
-
+  alpha: true,
   powerPreference: "high-performance",
   antialias: true,
 });
 renderer.setSize(sizes.width, sizes.height);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setClearColor(new THREE.Color("#1c1624"));
 
 renderer.shadowMap.enabled = true;
 
@@ -116,3 +123,33 @@ function moveCar(elapsedTime) {
 
   car.rotation.z = 0.06 * Math.sin(elapsedTime * 5);
 }
+
+//star
+const loader = new THREE.TextureLoader();
+
+const geometry = new THREE.BufferGeometry();
+geometry.setAttribute(
+  "position",
+  new THREE.BufferAttribute(getRandomParticelPos(350), 3)
+);
+
+const getRandomParticelPos = (particleCount) => {
+  const arr = new Float32Array(particleCount * 3);
+  for (let i = 0; i < particleCount; i++) {
+    arr[i] = (Math.random() - 0.5) * 10;
+  }
+  return arr;
+};
+
+const material = new THREE.PointsMaterial({
+  size: 0.05,
+  map: loader.load(
+    "https://raw.githubusercontent.com/Kuntal-Das/textures/main/sp2.png"
+  ),
+  transparent: true,
+  // color: 0x44aa88
+});
+
+const stars = new THREE.Mesh(geometry, material);
+
+scene.add(stars);
